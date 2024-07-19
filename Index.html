@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Move Images with WASD Keys</title>
+    <link rel="icon" href="../image/camap.gif">
+    <link rel="stylesheet" href="./Code3.css">
+    
+   
+</head>
+<body>
+   
+    <button class="audio-button" id="amthanh">Play Sound</button>
+    <audio id="audioPlayer">
+      <source src="../image/am.mp3" type="audio/mp3">
+    </audio>
+    
+    <script>
+      const playSoundButton = document.getElementById('amthanh');
+      const audioPlayer = document.getElementById('audioPlayer');
+    
+      playSoundButton.addEventListener('click', () => {
+        if (audioPlayer.paused) {
+          audioPlayer.play();
+          playSoundButton.textContent = "Pause Sound";
+        } else {
+          audioPlayer.pause();
+          playSoundButton.textContent = "Play Sound";
+        }
+      });
+    </script>
+<!-- /*nut background*/ -->
+<button class="btn" onclick="changeBackgroundImage()">Change Background</button>
+
+<script>
+    function changeBackgroundImage() {
+        const images = [
+            'url("../image/back4.jpg")',
+            'url("../image/backgound.jpg")',
+
+        ];
+        const randomImage = images[Math.floor(Math.random() * images.length)];
+        document.body.style.backgroundImage = randomImage;
+    }
+</script>
+
+    <div class="danca">
+        <img class="image" id="image1" src="../image/cacon.gif">
+        <img class="image" id="image12" src="../image/cacon.gif">
+        <img class="image" id="image13" src="../image/cacon.gif">
+        <img class="image" id="image14" src="../image/cacon.gif">
+        <img class="image" id="image15" src="../image/cacon.gif">
+        <img class="image" id="image16" src="../image/cacon.gif">
+    </div>
+    <p  class ="image" id ="p1"> You can use W,A,S,D to control shark</p>
+    <img class="image" id="image2" src="../image/caheo.gif">
+    <img class="image" id="image22" src="../image/caheo.gif">
+    <img class="image" id="image3" src="../image/saobien.gif">
+    <img class="image" id="image32" src="../image/saobien.gif">
+    <img class="image" id="image33" src="../image/saobien.gif">
+    <img class="image" id="image4" src="../image/ngoaicanh.gif">
+    <img class="image" id="image42" src="../image/ngoaicanh.gif">
+    <img class="image" id="image43" src="../image/ngoaicanh.gif">
+    <img class="image" id="image44" src="../image/ngoaicanh.gif">
+    <img class="image" id="image5" src="../image/tau.gif">
+    <img class="image" id="image6" src="../image/tholan.gif">
+    <img class="image" id="che" src="../image/Screenshot 2024-07-17 142934.png">
+    <img class="image" id="che2" src="../image/Screenshot 2024-07-17 142934.png">
+    <img src="../image/camap.gif" alt="Image" class="image" id="shark">
+
+    <script>
+       
+        function hideText() {
+            document.getElementById("p1").classList.add("hidden");
+        }
+        document.getElementById("p1").classList.remove("hidden");
+        setTimeout(hideText, 3000);
+    </script>
+
+    <script>
+        const image = document.getElementById('shark');
+        const dancaObstacles = document.querySelectorAll('.danca .image');
+        const step = 30;
+        const fleeStep = 10;
+        const detectionRange = 100;
+        const returnTime = 10000; 
+
+        
+        const initialPositions = {};
+        dancaObstacles.forEach(obstacle => {
+            initialPositions[obstacle.id] = {
+                top: parseInt(window.getComputedStyle(obstacle).top),
+                left: parseInt(window.getComputedStyle(obstacle).left)
+            };
+        });
+
+        function checkProximityAndMove(obstacle) {
+            const imageRect = image.getBoundingClientRect();
+            const obstacleRect = obstacle.getBoundingClientRect();
+
+            const distanceX = Math.abs(imageRect.left - obstacleRect.left);
+            const distanceY = Math.abs(imageRect.top - obstacleRect.top);
+
+            if (distanceX < detectionRange && distanceY < detectionRange) {
+                let top = parseInt(window.getComputedStyle(obstacle).top);
+                let left = parseInt(window.getComputedStyle(obstacle).left);
+
+                if (imageRect.left < obstacleRect.left) {
+                    left += fleeStep;
+                } else {
+                    left -= fleeStep;
+                }
+
+                if (imageRect.top < obstacleRect.top) {
+                    top += fleeStep;
+                } else {
+                    top -= fleeStep;
+                }
+
+                obstacle.style.top = top + 'px';
+                obstacle.style.left = left + 'px';
+
+                
+                setTimeout(() => {
+                    obstacle.style.top = initialPositions[obstacle.id].top + 'px';
+                    obstacle.style.left = initialPositions[obstacle.id].left + 'px';
+                }, returnTime);
+            }
+        }
+
+        document.addEventListener('keydown', (event) => {
+            let top = parseInt(window.getComputedStyle(image).top);
+            let left = parseInt(window.getComputedStyle(image).left);
+            const imageWidth = image.offsetWidth;
+            const imageHeight = image.offsetHeight;
+            const windowWidth = window.innerWidth;
+            const windowHeight = window.innerHeight;
+
+            image.classList.remove('w', 's', 'a', 'd');
+            switch(event.key.toLowerCase()) {
+                case 'w':
+                    if (top - step >= 0) {
+                        top -= step;
+                    }
+                    image.classList.add('w');
+                    break;
+                case 's':
+                    if (top + step + imageHeight <= windowHeight) {
+                        top += step;
+                    }
+                    image.classList.add('s');
+                    break;
+                case 'a':
+                    if (left - step >= 0) {
+                        left -= step;
+                    }
+                    image.classList.add('a');
+                    break;
+                case 'd':
+                    if (left + step + imageWidth <= windowWidth) {
+                        left += step;
+                    }
+                    image.classList.add('d');
+                    break;
+            }
+
+            image.style.top = top + 'px';
+            image.style.left = left + 'px';
+
+            dancaObstacles.forEach(obstacle => {
+                checkProximityAndMove(obstacle);
+            });
+        });
+    </script>
+</body>
+</html>
